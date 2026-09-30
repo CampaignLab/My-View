@@ -1,0 +1,1 @@
+{"name":"@my-view/db","private":true,"type":"module","exports":"./schema.ts","scripts":{"typecheck":"tsc -p tsconfig.json"},"dependencies":{"drizzle-orm":"latest"}}

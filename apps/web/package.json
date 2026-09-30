@@ -1,0 +1,6 @@
+{
+  "name":"@my-view/web", "private":true,
+  "scripts":{"dev":"next dev --hostname 127.0.0.1","build":"next build","start":"next start --hostname 127.0.0.1","typecheck":"tsc --noEmit"},
+  "dependencies":{"@my-view/shared":"workspace:*","@my-view/db":"workspace:*","@my-view/ui":"workspace:*","next":"latest","react":"latest","react-dom":"latest","@clerk/nextjs":"latest","@clerk/backend":"latest","@neondatabase/serverless":"latest","drizzle-orm":"latest","openai":"latest","zod":"latest","lucide-react":"latest","server-only":"latest"},
+  "devDependencies":{"@types/react":"latest","@types/react-dom":"latest","@tailwindcss/postcss":"latest","tailwindcss":"latest"}
+}

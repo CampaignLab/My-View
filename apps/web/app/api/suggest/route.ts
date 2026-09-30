@@ -1,0 +1,23 @@
+import { suggestSchema } from '@my-view/shared';
+import { suggestions, interactions } from '@my-view/db';
+import { and, eq, gte, count } from 'drizzle-orm';
+import { body, endpoint, preflight, HttpError } from '../../../lib/http';
+import { requireUser } from '../../../lib/auth';
+import { saveCapture } from '../../../lib/capture';
+import { getProfile } from '../../../lib/profile';
+import { generate } from '../../../lib/openai';
+import { db } from '../../../lib/db';
+export const maxDuration = 60;
+export const POST = endpoint(async request => {
+  const user = await requireUser(request); const input = await body(request, suggestSchema);
+  const database = db();
+  const [recent] = await database.select({ total: count() }).from(suggestions).where(and(eq(suggestions.userId, user.id), gte(suggestions.createdAt, new Date(Date.now() - 3600000))));
+  if (recent.total >= 60) throw new HttpError(429, 'Please wait before requesting more suggestions.');
+  await saveCapture(user.id, input);
+  const output = await generate(input.post, await getProfile(user), input.instructions, input.tone);
+  const options = [ { text: output.conversational, style: 'conversational' }, { text: output.concise, style: 'short' }, { text: output.question, style: 'question' } ] as const;
+  const saved = await database.insert(suggestions).values(options.map(o => ({ userId: user.id, capturedPostId: input.captureId, generatedText: o.text.slice(0, 5000), variant: o.style }))).returning();
+  await database.insert(interactions).values({ userId: user.id, capturedPostId: input.captureId, event: input.regenerate ? 'suggestion_regenerated' : 'suggestion_generated' });
+  return { summary: output.summary, clarification: output.clarification, suggestions: saved.map(s => ({ id: s.id, text: s.generatedText, style: s.variant })) };
+});
+export const OPTIONS = preflight;

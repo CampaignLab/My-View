@@ -1,0 +1,23 @@
+{
+  "name": "my-view",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.25.0",
+  "scripts": {
+    "dev": "pnpm --filter @my-view/web dev",
+    "build": "pnpm --filter @my-view/extension build && pnpm --filter @my-view/web build",
+    "build:extension": "pnpm --filter @my-view/extension build",
+    "typecheck": "pnpm -r typecheck",
+    "test": "vitest run",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "dotenv": "latest",
+    "drizzle-kit": "latest",
+    "typescript": "latest",
+    "vitest": "latest",
+    "jsdom": "latest"
+  }
+}
